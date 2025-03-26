@@ -1,9 +1,10 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Heart, Home, Menu, Users, Calendar, BookOpen, ShoppingBag, Settings, X } from "lucide-react";
+import { Heart, Home, Menu, Users, Calendar, BookOpen, ShoppingBag, Settings, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navigation = [
   { name: "Home", href: "/", icon: Home },
@@ -20,6 +21,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   // Handle scroll effect
   useEffect(() => {
@@ -78,6 +80,18 @@ export default function Navbar() {
                 <span>{item.name}</span>
               </Link>
             ))}
+            
+            {user && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={signOut}
+                className="nav-link ml-2"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                <span>Logout</span>
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -114,6 +128,16 @@ export default function Navbar() {
                 <span>{item.name}</span>
               </Link>
             ))}
+            
+            {user && (
+              <button
+                onClick={signOut}
+                className="flex w-full items-center space-x-3 py-3 px-4 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                <LogOut className="h-5 w-5" />
+                <span>Logout</span>
+              </button>
+            )}
           </div>
         </div>
       )}
