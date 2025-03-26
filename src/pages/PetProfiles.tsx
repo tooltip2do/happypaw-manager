@@ -4,9 +4,10 @@ import { Heart, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PetProfileCard from "@/components/ui/PetProfileCard";
+import AddPetModal from "@/components/pets/AddPetModal";
 
-// Mock data
-const petProfiles = [
+// Initial pet profiles
+const initialPetProfiles = [
   {
     id: 1,
     name: "Bella",
@@ -30,25 +31,23 @@ const petProfiles = [
     breed: "Border Collie",
     age: "4 years",
     image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 4,
-    name: "Luna",
-    type: "Cat",
-    breed: "Siamese",
-    age: "1 year",
-    image: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
   }
 ];
 
 export default function PetProfiles() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [addPetModalOpen, setAddPetModalOpen] = useState(false);
+  const [petProfiles, setPetProfiles] = useState(initialPetProfiles);
 
   const filteredPets = petProfiles.filter(pet => 
     pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     pet.breed.toLowerCase().includes(searchQuery.toLowerCase()) ||
     pet.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleAddPet = (pet: any) => {
+    setPetProfiles([...petProfiles, pet]);
+  };
 
   return (
     <div className="page-container page-transition">
@@ -70,7 +69,10 @@ export default function PetProfiles() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button className="bg-petcare-teal hover:bg-petcare-teal/90">
+        <Button 
+          className="bg-petcare-teal hover:bg-petcare-teal/90"
+          onClick={() => setAddPetModalOpen(true)}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add New Pet
         </Button>
@@ -88,7 +90,10 @@ export default function PetProfiles() {
             image={pet.image}
           />
         ))}
-        <div className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-6 h-full card-hover min-h-[260px]">
+        <div 
+          className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-6 h-full card-hover min-h-[260px] cursor-pointer"
+          onClick={() => setAddPetModalOpen(true)}
+        >
           <div className="text-center">
             <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-petcare-blue/10 mb-3">
               <Heart className="h-6 w-6 text-petcare-blue" />
@@ -117,6 +122,13 @@ export default function PetProfiles() {
           <Button variant="outline" className="self-start">Read Tips</Button>
         </div>
       </div>
+
+      {/* Add Pet Modal */}
+      <AddPetModal
+        open={addPetModalOpen}
+        onOpenChange={setAddPetModalOpen}
+        onPetAdded={handleAddPet}
+      />
     </div>
   );
 }
