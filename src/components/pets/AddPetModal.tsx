@@ -22,20 +22,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useStorage } from "@/hooks/useStorage";
+import { NewPet } from "@/hooks/usePets";
 
 interface PetFormValues {
   name: string;
   type: string;
   breed: string;
   age: string;
-  image: string;
+  image: FileList | null;
 }
 
 interface AddPetModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onPetAdded: (pet: any) => void;
+  onPetAdded: (pet: NewPet) => void;
 }
 
 export default function AddPetModal({
@@ -45,6 +46,7 @@ export default function AddPetModal({
 }: AddPetModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { uploadFile } = useStorage();
 
   const form = useForm<PetFormValues>({
     defaultValues: {
@@ -52,37 +54,22 @@ export default function AddPetModal({
       type: "",
       breed: "",
       age: "",
-      image: "",
+      image: null,
     },
   });
 
   const onSubmit = async (data: PetFormValues) => {
     setIsSubmitting(true);
     try {
-      let image_url = null;
+      let image_url = undefined;
       
-      if (imagePreview) {
-        const file = await fetch(imagePreview).then(r => r.blob());
-        const fileExt = imagePreview.split(';')[0].split('/')[1];
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('pets')
-          .upload(filePath, file);
-
-        if (uploadError) {
-          throw uploadError;
-        }
-
-        const { data: publicUrl } = supabase.storage
-          .from('pets')
-          .getPublicUrl(filePath);
-
-        image_url = publicUrl.publicUrl;
+      // Upload image if selected
+      if (data.image && data.image.length > 0) {
+        const file = data.image[0];
+        image_url = await uploadFile(file, "pets");
       }
 
-      const newPet = {
+      const newPet: NewPet = {
         name: data.name,
         type: data.type,
         breed: data.breed,
@@ -102,11 +89,12 @@ export default function AddPetModal({
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      form.setValue("image", files);
       const preview = URL.createObjectURL(file);
       setImagePreview(preview);
-      form.setValue("image", preview);
     }
   };
 

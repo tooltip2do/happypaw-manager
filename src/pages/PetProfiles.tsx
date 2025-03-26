@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PetProfileCard from "@/components/ui/PetProfileCard";
 import AddPetModal from "@/components/pets/AddPetModal";
-import { usePets } from "@/hooks/usePets";
+import { usePets, NewPet } from "@/hooks/usePets";
 
 export default function PetProfiles() {
   const [searchQuery, setSearchQuery] = useState("");
   const [addPetModalOpen, setAddPetModalOpen] = useState(false);
-  const { pets, isLoading, addPet } = usePets();
+  const { pets, isLoading, addPet, isAdding } = usePets();
 
   const filteredPets = pets.filter(pet => 
     pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -18,7 +18,7 @@ export default function PetProfiles() {
     pet.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleAddPet = async (petData: any) => {
+  const handleAddPet = async (petData: NewPet) => {
     await addPet(petData);
     setAddPetModalOpen(false);
   };
@@ -55,7 +55,20 @@ export default function PetProfiles() {
       {/* Pet profiles grid */}
       <div className="staggered-fade-in grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {isLoading ? (
-          <div>Loading...</div>
+          <div className="col-span-full flex justify-center p-8">
+            <div className="animate-pulse flex space-x-4">
+              <div className="h-10 w-10 rounded-full bg-slate-200"></div>
+              <div className="flex-1 space-y-6 py-1">
+                <div className="h-4 rounded bg-slate-200"></div>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="h-4 col-span-2 rounded bg-slate-200"></div>
+                    <div className="h-4 col-span-1 rounded bg-slate-200"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         ) : filteredPets.length > 0 ? (
           filteredPets.map((pet) => (
             <PetProfileCard
@@ -68,7 +81,7 @@ export default function PetProfiles() {
             />
           ))
         ) : (
-          <div className="col-span-full text-center text-muted-foreground">
+          <div className="col-span-full text-center text-muted-foreground p-8">
             No pets found. Add your first pet to get started!
           </div>
         )}

@@ -6,27 +6,10 @@ import { Button } from "@/components/ui/button";
 import PetProfileCard from "@/components/ui/PetProfileCard";
 import AppointmentCard from "@/components/ui/AppointmentCard";
 import ResourceCard from "@/components/ui/ResourceCard";
+import { usePets } from "@/hooks/usePets";
+import AddPetModal from "@/components/pets/AddPetModal";
 
-// Mock data
-const pets = [
-  {
-    id: 1,
-    name: "Bella",
-    type: "Dog",
-    breed: "Golden Retriever",
-    age: "3 years",
-    image: "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 2,
-    name: "Oliver",
-    type: "Cat",
-    breed: "Maine Coon",
-    age: "2 years",
-    image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-  }
-];
-
+// Mock data for appointments and resources
 const appointments = [
   {
     id: 1,
@@ -68,6 +51,14 @@ const resources = [
 ];
 
 export default function Index() {
+  const [addPetModalOpen, setAddPetModalOpen] = useState(false);
+  const { pets, isLoading, addPet } = usePets();
+
+  const handleAddPet = async (petData: any) => {
+    await addPet(petData);
+    setAddPetModalOpen(false);
+  };
+
   return (
     <div className="page-transition">
       {/* Hero section */}
@@ -81,11 +72,11 @@ export default function Index() {
               Track health, schedule care, connect with experts, and access resources—all in one place.
             </p>
             <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
-              <Button size="lg" className="bg-petcare-teal hover:bg-petcare-teal/90 text-white">
+              <Button size="lg" className="bg-petcare-teal hover:bg-petcare-teal/90 text-white" onClick={() => setAddPetModalOpen(true)}>
                 Add Your Pet
               </Button>
-              <Button size="lg" variant="outline">
-                Explore Features
+              <Button size="lg" variant="outline" asChild>
+                <Link to="/pet-profiles">Explore Features</Link>
               </Button>
             </div>
           </div>
@@ -133,22 +124,39 @@ export default function Index() {
             </Button>
           </div>
           <div className="staggered-fade-in grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {pets.map((pet) => (
-              <PetProfileCard
-                key={pet.id}
-                name={pet.name}
-                type={pet.type}
-                breed={pet.breed}
-                age={pet.age}
-                image={pet.image}
-              />
-            ))}
-            <div className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-6 h-full card-hover min-h-[200px]">
+            {isLoading ? (
+              <div className="col-span-2 flex justify-center p-4">
+                <div className="animate-pulse flex space-x-4">
+                  <div className="rounded-full bg-slate-200 h-10 w-10"></div>
+                  <div className="flex-1 space-y-4 py-1">
+                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-slate-200 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : pets.length > 0 ? (
+              pets.slice(0, 3).map((pet) => (
+                <PetProfileCard
+                  key={pet.id}
+                  name={pet.name}
+                  type={pet.type}
+                  breed={pet.breed}
+                  age={pet.age}
+                  image={pet.image_url || "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"}
+                />
+              ))
+            ) : null}
+            <div 
+              className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-6 h-full card-hover min-h-[200px] cursor-pointer"
+              onClick={() => setAddPetModalOpen(true)}
+            >
               <div className="text-center">
                 <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-petcare-blue/10 mb-3">
                   <Heart className="h-6 w-6 text-petcare-blue" />
                 </div>
-                <h3 className="font-medium text-sm mb-2">Add Another Pet</h3>
+                <h3 className="font-medium text-sm mb-2">Add {pets.length > 0 ? 'Another' : 'Your First'} Pet</h3>
                 <p className="text-xs text-muted-foreground">
                   Add your pet's profile to get personalized care recommendations
                 </p>
@@ -235,6 +243,13 @@ export default function Index() {
           </div>
         </section>
       </div>
+      
+      {/* Add Pet Modal */}
+      <AddPetModal
+        open={addPetModalOpen}
+        onOpenChange={setAddPetModalOpen}
+        onPetAdded={handleAddPet}
+      />
     </div>
   );
 }

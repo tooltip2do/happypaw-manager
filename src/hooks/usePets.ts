@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useStorage } from "@/hooks/useStorage";
 
 export interface Pet {
   id: string;
@@ -15,8 +16,17 @@ export interface Pet {
   updated_at: string;
 }
 
+export type NewPet = {
+  name: string;
+  type: string;
+  breed: string;
+  age: string;
+  image_url?: string;
+}
+
 export const usePets = () => {
   const queryClient = useQueryClient();
+  const { uploadFile } = useStorage();
 
   const { data: pets = [], isLoading } = useQuery({
     queryKey: ["pets"],
@@ -36,10 +46,22 @@ export const usePets = () => {
   });
 
   const addPet = useMutation({
-    mutationFn: async (newPet: Omit<Pet, "id" | "owner_id" | "created_at" | "updated_at">) => {
+    mutationFn: async (newPet: NewPet) => {
+      // Get the current authenticated user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      const petData = {
+        ...newPet,
+        owner_id: user.id
+      };
+
       const { data, error } = await supabase
         .from("pets")
-        .insert([newPet])
+        .insert(petData)
         .select()
         .single();
 

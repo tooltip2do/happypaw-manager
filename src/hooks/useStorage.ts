@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useStorage = () => {
   const uploadFile = async (file: File, bucket: string) => {
+    if (!file) return null;
+    
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random()}.${fileExt}`;
     const filePath = `${fileName}`;
