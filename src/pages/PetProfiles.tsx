@@ -5,48 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PetProfileCard from "@/components/ui/PetProfileCard";
 import AddPetModal from "@/components/pets/AddPetModal";
-
-// Initial pet profiles
-const initialPetProfiles = [
-  {
-    id: 1,
-    name: "Bella",
-    type: "Dog",
-    breed: "Golden Retriever",
-    age: "3 years",
-    image: "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 2,
-    name: "Oliver",
-    type: "Cat",
-    breed: "Maine Coon",
-    age: "2 years",
-    image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 3,
-    name: "Max",
-    type: "Dog",
-    breed: "Border Collie",
-    age: "4 years",
-    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-  }
-];
+import { usePets } from "@/hooks/usePets";
 
 export default function PetProfiles() {
   const [searchQuery, setSearchQuery] = useState("");
   const [addPetModalOpen, setAddPetModalOpen] = useState(false);
-  const [petProfiles, setPetProfiles] = useState(initialPetProfiles);
+  const { pets, isLoading, addPet } = usePets();
 
-  const filteredPets = petProfiles.filter(pet => 
+  const filteredPets = pets.filter(pet => 
     pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     pet.breed.toLowerCase().includes(searchQuery.toLowerCase()) ||
     pet.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleAddPet = (pet: any) => {
-    setPetProfiles([...petProfiles, pet]);
+  const handleAddPet = async (petData: any) => {
+    await addPet(petData);
+    setAddPetModalOpen(false);
   };
 
   return (
@@ -80,16 +54,24 @@ export default function PetProfiles() {
 
       {/* Pet profiles grid */}
       <div className="staggered-fade-in grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredPets.map((pet) => (
-          <PetProfileCard
-            key={pet.id}
-            name={pet.name}
-            type={pet.type}
-            breed={pet.breed}
-            age={pet.age}
-            image={pet.image}
-          />
-        ))}
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : filteredPets.length > 0 ? (
+          filteredPets.map((pet) => (
+            <PetProfileCard
+              key={pet.id}
+              name={pet.name}
+              type={pet.type}
+              breed={pet.breed}
+              age={pet.age}
+              image={pet.image_url || "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"}
+            />
+          ))
+        ) : (
+          <div className="col-span-full text-center text-muted-foreground">
+            No pets found. Add your first pet to get started!
+          </div>
+        )}
         <div 
           className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-6 h-full card-hover min-h-[260px] cursor-pointer"
           onClick={() => setAddPetModalOpen(true)}

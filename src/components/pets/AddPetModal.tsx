@@ -22,14 +22,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
-type PetFormValues = {
+interface PetFormValues {
   name: string;
   type: string;
   breed: string;
   age: string;
   image: string;
-};
+}
 
 interface AddPetModalProps {
   open: boolean;
@@ -58,39 +59,41 @@ export default function AddPetModal({
   const onSubmit = async (data: PetFormValues) => {
     setIsSubmitting(true);
     try {
-      // In a real app, this would upload the image to a storage service
-      // and store the pet data in a database
+      let image_url = null;
       
-      // Here we're using placeholder images based on pet type
-      let petImage = data.image;
-      if (!petImage) {
-        if (data.type === "Dog") {
-          petImage = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
-        } else if (data.type === "Cat") {
-          petImage = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
-        } else {
-          petImage = "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
+      if (imagePreview) {
+        const file = await fetch(imagePreview).then(r => r.blob());
+        const fileExt = imagePreview.split(';')[0].split('/')[1];
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('pets')
+          .upload(filePath, file);
+
+        if (uploadError) {
+          throw uploadError;
         }
+
+        const { data: publicUrl } = supabase.storage
+          .from('pets')
+          .getPublicUrl(filePath);
+
+        image_url = publicUrl.publicUrl;
       }
-      
+
       const newPet = {
-        id: Date.now(),
         name: data.name,
         type: data.type,
         breed: data.breed,
         age: data.age,
-        image: petImage || imagePreview,
+        image_url: image_url,
       };
-      
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      
-      onPetAdded(newPet);
+
+      await onPetAdded(newPet);
       form.reset();
       setImagePreview(null);
-      onOpenChange(false);
-      toast.success(`Added ${data.name} to your pets!`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding pet:", error);
       toast.error("Failed to add pet");
     } finally {
@@ -101,8 +104,6 @@ export default function AddPetModal({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // For demo purposes, we'll just create a local URL for the image preview
-      // In a real app, this would be uploaded to a storage service
       const preview = URL.createObjectURL(file);
       setImagePreview(preview);
       form.setValue("image", preview);
