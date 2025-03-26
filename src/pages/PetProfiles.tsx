@@ -1,0 +1,122 @@
+
+import { useState } from "react";
+import { Heart, Plus, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import PetProfileCard from "@/components/ui/PetProfileCard";
+
+// Mock data
+const petProfiles = [
+  {
+    id: 1,
+    name: "Bella",
+    type: "Dog",
+    breed: "Golden Retriever",
+    age: "3 years",
+    image: "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: 2,
+    name: "Oliver",
+    type: "Cat",
+    breed: "Maine Coon",
+    age: "2 years",
+    image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: 3,
+    name: "Max",
+    type: "Dog",
+    breed: "Border Collie",
+    age: "4 years",
+    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: 4,
+    name: "Luna",
+    type: "Cat",
+    breed: "Siamese",
+    age: "1 year",
+    image: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+  }
+];
+
+export default function PetProfiles() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredPets = petProfiles.filter(pet => 
+    pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    pet.breed.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    pet.type.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="page-container page-transition">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Pet Profiles</h1>
+        <p className="text-muted-foreground">
+          Manage your pet's information and health records in one place.
+        </p>
+      </div>
+
+      {/* Controls */}
+      <div className="flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0 mb-6">
+        <div className="relative max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search pets..."
+            className="pl-9"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <Button className="bg-petcare-teal hover:bg-petcare-teal/90">
+          <Plus className="h-4 w-4 mr-2" />
+          Add New Pet
+        </Button>
+      </div>
+
+      {/* Pet profiles grid */}
+      <div className="staggered-fade-in grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {filteredPets.map((pet) => (
+          <PetProfileCard
+            key={pet.id}
+            name={pet.name}
+            type={pet.type}
+            breed={pet.breed}
+            age={pet.age}
+            image={pet.image}
+          />
+        ))}
+        <div className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-6 h-full card-hover min-h-[260px]">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-petcare-blue/10 mb-3">
+              <Heart className="h-6 w-6 text-petcare-blue" />
+            </div>
+            <h3 className="font-medium text-sm mb-2">Add Another Pet</h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Add your pet's profile to get personalized care recommendations
+            </p>
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-1" />
+              Add Pet
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Pet care tips */}
+      <div className="mt-16 bg-blue-50 rounded-2xl p-6 md:p-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between">
+          <div className="md:max-w-lg">
+            <h2 className="text-xl font-semibold mb-2">Want to learn more about pet profiles?</h2>
+            <p className="text-muted-foreground mb-4 md:mb-0">
+              Discover how detailed pet profiles can help you provide better care and make veterinary visits more effective.
+            </p>
+          </div>
+          <Button variant="outline" className="self-start">Read Tips</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
