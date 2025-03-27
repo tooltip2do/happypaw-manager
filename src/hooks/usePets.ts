@@ -31,6 +31,13 @@ export const usePets = () => {
   const { data: pets = [], isLoading } = useQuery({
     queryKey: ["pets"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        // Return empty array if not authenticated
+        return [];
+      }
+
       const { data, error } = await supabase
         .from("pets")
         .select("*")
@@ -46,7 +53,7 @@ export const usePets = () => {
   });
 
   const addPet = useMutation({
-    mutationFn: async (newPet: NewPet) => {
+    mutationFn: async (newPet: NewPet & { image?: File }) => {
       // Get the current authenticated user
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -54,8 +61,25 @@ export const usePets = () => {
         throw new Error("User not authenticated");
       }
 
+      // Handle image upload if provided
+      let imageUrl = newPet.image_url;
+      if (newPet.image) {
+        try {
+          imageUrl = await uploadFile(newPet.image, "pets");
+        } catch (error) {
+          console.error("Image upload failed:", error);
+          toast.error("Failed to upload image");
+          throw error;
+        }
+      }
+
+      // Prepare pet data without the image File object
       const petData = {
-        ...newPet,
+        name: newPet.name,
+        type: newPet.type,
+        breed: newPet.breed,
+        age: newPet.age,
+        image_url: imageUrl,
         owner_id: user.id
       };
 
@@ -76,6 +100,10 @@ export const usePets = () => {
       queryClient.invalidateQueries({ queryKey: ["pets"] });
       toast.success("Pet added successfully");
     },
+    onError: (error) => {
+      console.error("Error adding pet:", error);
+      toast.error("An error occurred while adding your pet");
+    }
   });
 
   return {

@@ -22,7 +22,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { useStorage } from "@/hooks/useStorage";
 import { NewPet } from "@/hooks/usePets";
 
 interface PetFormValues {
@@ -36,7 +35,7 @@ interface PetFormValues {
 interface AddPetModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onPetAdded: (pet: NewPet) => void;
+  onPetAdded: (pet: NewPet & { image?: File }) => void;
 }
 
 export default function AddPetModal({
@@ -46,7 +45,6 @@ export default function AddPetModal({
 }: AddPetModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { uploadFile } = useStorage();
 
   const form = useForm<PetFormValues>({
     defaultValues: {
@@ -61,21 +59,17 @@ export default function AddPetModal({
   const onSubmit = async (data: PetFormValues) => {
     setIsSubmitting(true);
     try {
-      let image_url = undefined;
-      
-      // Upload image if selected
-      if (data.image && data.image.length > 0) {
-        const file = data.image[0];
-        image_url = await uploadFile(file, "pets");
-      }
-
-      const newPet: NewPet = {
+      const newPet: NewPet & { image?: File } = {
         name: data.name,
         type: data.type,
         breed: data.breed,
         age: data.age,
-        image_url: image_url,
       };
+
+      // Add image if selected
+      if (data.image && data.image.length > 0) {
+        newPet.image = data.image[0];
+      }
 
       await onPetAdded(newPet);
       form.reset();
@@ -98,8 +92,14 @@ export default function AddPetModal({
     }
   };
 
+  const closeModal = () => {
+    form.reset();
+    setImagePreview(null);
+    onOpenChange(false);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={closeModal}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Add New Pet</DialogTitle>
@@ -109,7 +109,7 @@ export default function AddPetModal({
           <Button
             variant="ghost"
             className="absolute right-4 top-4 rounded-sm p-0 h-auto"
-            onClick={() => onOpenChange(false)}
+            onClick={closeModal}
           >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
@@ -237,7 +237,7 @@ export default function AddPetModal({
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" onClick={closeModal}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>

@@ -6,7 +6,7 @@ export const useStorage = () => {
     if (!file) return null;
     
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+    const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
     const filePath = `${fileName}`;
 
     const { data, error } = await supabase.storage
@@ -14,6 +14,7 @@ export const useStorage = () => {
       .upload(filePath, file);
 
     if (error) {
+      console.error("Storage error:", error);
       throw error;
     }
 

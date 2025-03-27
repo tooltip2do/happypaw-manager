@@ -18,7 +18,7 @@ export default function PetProfiles() {
     pet.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleAddPet = async (petData: NewPet) => {
+  const handleAddPet = async (petData: NewPet & { image?: File }) => {
     await addPet(petData);
     setAddPetModalOpen(false);
   };
