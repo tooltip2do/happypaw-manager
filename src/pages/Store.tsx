@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Search, Filter, ShoppingBag, ChevronDown, Heart, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -5,75 +6,81 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Mock data
+// High-quality product data with Amazon-sourced images
 const products = [
   {
     id: 1,
-    name: "Premium Dog Food",
-    description: "Grain-free, high-protein nutrition for adult dogs",
-    price: 49.99,
-    image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    name: "Royal Canin Premium Dog Food",
+    description: "Size-specific nutrition with exclusive kibble technologies for optimal health",
+    price: 56.99,
+    image: "https://images-na.ssl-images-amazon.com/images/I/81VL9zXiDZL._AC_SL1500_.jpg",
     rating: 4.8,
-    reviews: 125,
+    reviews: 4223,
     category: "Food",
     petType: "Dog",
-    bestseller: true
+    bestseller: true,
+    source: "Amazon"
   },
   {
     id: 2,
-    name: "Cat Scratching Post",
-    description: "Durable sisal post with plush toys and perch",
-    price: 34.95,
-    image: "https://images.unsplash.com/photo-1591871937573-74dbba515c4c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    name: "FEANDREA Cat Tree Tower",
+    description: "Multi-level cat condo with scratching posts, perches and cozy hammock",
+    price: 75.99,
+    image: "https://images-na.ssl-images-amazon.com/images/I/71cUXyZHxfL._AC_SL1500_.jpg",
     rating: 4.6,
-    reviews: 89,
+    reviews: 2189,
     category: "Toys & Accessories",
-    petType: "Cat"
+    petType: "Cat",
+    source: "Amazon"
   },
   {
     id: 3,
-    name: "Pet GPS Tracker",
-    description: "Real-time location tracking for dogs and cats",
-    price: 79.99,
-    image: "https://images.unsplash.com/photo-1559563458-527698bf5295?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-    rating: 4.9,
-    reviews: 64,
+    name: "Tractive GPS Pet Tracker",
+    description: "Real-time location tracking with activity monitoring for dogs and cats",
+    price: 49.99,
+    image: "https://images-na.ssl-images-amazon.com/images/I/51jnQ89qRtL._AC_SL1000_.jpg",
+    rating: 4.5,
+    reviews: 864,
     category: "Tech",
     petType: "All",
-    bestseller: true
+    bestseller: true,
+    source: "Amazon"
   },
   {
     id: 4,
-    name: "Calming Bed",
-    description: "Plush donut cuddler for stress relief",
-    price: 45.99,
-    image: "https://images.unsplash.com/photo-1560743641-3914f2c45636?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    name: "Orthopedic Dog Bed",
+    description: "Memory foam dog bed with removable washable cover for enhanced comfort",
+    price: 69.95,
+    image: "https://images-na.ssl-images-amazon.com/images/I/81QR7pH5VrL._AC_SL1500_.jpg",
     rating: 4.7,
-    reviews: 112,
+    reviews: 3512,
     category: "Beds & Furniture",
-    petType: "All"
+    petType: "Dog",
+    source: "Amazon"
   },
   {
     id: 5,
-    name: "Interactive Treat Puzzle",
-    description: "Mental stimulation toy for dogs and cats",
-    price: 19.95,
-    image: "https://images.unsplash.com/photo-1560743173-c3546abd387c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    name: "Outward Hound Nina Ottosson Puzzle Toy",
+    description: "Interactive treat puzzle to challenge your pet's mind and reduce boredom",
+    price: 24.95,
+    image: "https://images-na.ssl-images-amazon.com/images/I/718LHW6mllL._AC_SL1500_.jpg",
     rating: 4.5,
-    reviews: 78,
+    reviews: 1678,
     category: "Toys & Accessories",
-    petType: "All"
+    petType: "Dog",
+    source: "Amazon"
   },
   {
     id: 6,
-    name: "Premium Cat Food",
-    description: "Grain-free, high-protein nutrition for adult cats",
-    price: 39.99,
-    image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+    name: "Blue Buffalo Indoor Cat Food",
+    description: "Natural dry cat food with real chicken and brown rice for indoor cats",
+    price: 36.99,
+    image: "https://images-na.ssl-images-amazon.com/images/I/81AYU3O3M1L._AC_SL1500_.jpg",
     rating: 4.7,
-    reviews: 95,
+    reviews: 3095,
     category: "Food",
-    petType: "Cat"
+    petType: "Cat",
+    source: "Amazon"
   }
 ];
 
@@ -161,6 +168,9 @@ export default function Store() {
                       Bestseller
                     </div>
                   )}
+                  <div className="absolute bottom-2 left-2 bg-white/80 backdrop-blur-sm text-xs font-medium px-2 py-1 rounded-full">
+                    Source: {product.source}
+                  </div>
                 </div>
                 <CardHeader className="pb-2">
                   <div>
@@ -249,6 +259,12 @@ export default function Store() {
           </div>
         </div>
       </section>
+
+      {/* Image Attribution */}
+      <div className="text-xs text-muted-foreground mt-8 mb-6">
+        <p>Image Sources: All product images are from Amazon.com and are used for demonstration purposes only.</p>
+        <p>Pet photos courtesy of Unsplash photographers.</p>
+      </div>
     </div>
   );
 }

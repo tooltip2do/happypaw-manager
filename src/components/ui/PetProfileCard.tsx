@@ -39,6 +39,29 @@ export default function PetProfileCard({
     if (onDelete) onDelete();
   };
 
+  // Default pet images based on type
+  const getDefaultPetImage = () => {
+    switch (type.toLowerCase()) {
+      case "dog":
+        return "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
+      case "cat":
+        return "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
+      case "bird":
+        return "https://images.unsplash.com/photo-1444464666168-49d633b86797?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
+      case "fish":
+        return "https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
+      case "rabbit":
+        return "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
+      case "hamster":
+        return "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
+      default:
+        return "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
+    }
+  };
+
+  // Use the provided image if valid, otherwise use a default based on pet type
+  const imageUrl = image && image !== "undefined" ? image : getDefaultPetImage();
+
   return (
     <div
       className={cn(
@@ -49,8 +72,8 @@ export default function PetProfileCard({
     >
       <div className="aspect-square overflow-hidden">
         <img
-          src={image}
-          alt={name}
+          src={imageUrl}
+          alt={`${name} - ${breed} ${type}`}
           className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
         />
       </div>

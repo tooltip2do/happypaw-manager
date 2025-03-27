@@ -21,6 +21,27 @@ export default function ResourceCard({
   className,
   onClick,
 }: ResourceCardProps) {
+  // Default resource images based on category
+  const getDefaultImage = () => {
+    switch (category.toLowerCase()) {
+      case "nutrition":
+        return "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+      case "training":
+        return "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+      case "health":
+        return "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+      case "grooming":
+        return "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+      case "behavior":
+        return "https://images.unsplash.com/photo-1450778869180-41d0601e046e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+      default:
+        return "https://images.unsplash.com/photo-1548767797-d8c844163c4c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+    }
+  };
+
+  // Use provided image or fallback to default based on category
+  const imageUrl = image || getDefaultImage();
+
   return (
     <div
       className={cn(
@@ -29,10 +50,10 @@ export default function ResourceCard({
       )}
       onClick={onClick}
     >
-      {image && (
+      {imageUrl && (
         <div className="aspect-video overflow-hidden">
           <img
-            src={image}
+            src={imageUrl}
             alt={title}
             className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
           />
