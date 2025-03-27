@@ -1,9 +1,10 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -24,6 +25,25 @@ import Auth from "./pages/Auth";
 // Create a client
 const queryClient = new QueryClient();
 
+// This component adds the forceHideBadge parameter to the URL if it's not already there
+// This will hide the Lovable badge/watermark in the app
+const HideBadgeEffect = () => {
+  const location = useLocation();
+  
+  React.useEffect(() => {
+    // Only add the parameter if it's not already in the URL
+    if (!window.location.href.includes('forceHideBadge=true')) {
+      // Check if there are already parameters in the URL
+      const separator = window.location.href.includes('?') ? '&' : '?';
+      // Modify the URL without causing a page reload
+      const newUrl = `${window.location.href}${separator}forceHideBadge=true`;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, [location]);
+  
+  return null;
+};
+
 const App = () => (
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
@@ -32,6 +52,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
+            <HideBadgeEffect />
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route
