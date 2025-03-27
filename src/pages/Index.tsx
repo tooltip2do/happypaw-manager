@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Bell, Calendar, Heart, Activity, Users, BookOpen, ShoppingBag, MoreHorizontal } from "lucide-react";
@@ -6,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import PetProfileCard from "@/components/ui/PetProfileCard";
 import AppointmentCard from "@/components/ui/AppointmentCard";
 import ResourceCard from "@/components/ui/ResourceCard";
-import { usePets } from "@/hooks/usePets";
+import { usePets, NewPet, Pet } from "@/hooks/usePets";
 import AddPetModal from "@/components/pets/AddPetModal";
+import EditPetModal from "@/components/pets/EditPetModal";
+import DeletePetDialog from "@/components/pets/DeletePetDialog";
 
-// Mock data for appointments and resources
 const appointments = [
   {
     id: 1,
@@ -52,16 +52,47 @@ const resources = [
 
 export default function Index() {
   const [addPetModalOpen, setAddPetModalOpen] = useState(false);
-  const { pets, isLoading, addPet } = usePets();
+  const [editPetModalOpen, setEditPetModalOpen] = useState(false);
+  const [deletePetDialogOpen, setDeletePetDialogOpen] = useState(false);
+  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  
+  const { 
+    pets, 
+    isLoading, 
+    addPet,
+    updatePet,
+    deletePet 
+  } = usePets();
 
-  const handleAddPet = async (petData: any) => {
+  const handleAddPet = async (petData: NewPet & { image?: File }) => {
     await addPet(petData);
     setAddPetModalOpen(false);
   };
 
+  const handleEditClick = (pet: Pet) => {
+    setSelectedPet(pet);
+    setEditPetModalOpen(true);
+  };
+
+  const handleDeleteClick = (pet: Pet) => {
+    setSelectedPet(pet);
+    setDeletePetDialogOpen(true);
+  };
+
+  const handleUpdatePet = async (id: string, petData: NewPet & { image?: File }) => {
+    await updatePet({ id, pet: petData });
+    setEditPetModalOpen(false);
+  };
+
+  const handleDeletePet = async () => {
+    if (selectedPet) {
+      await deletePet(selectedPet.id);
+      setDeletePetDialogOpen(false);
+    }
+  };
+
   return (
     <div className="page-transition">
-      {/* Hero section */}
       <section className="bg-gradient-to-b from-white to-blue-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-16 md:pt-12 md:pb-24">
           <div className="text-center max-w-3xl mx-auto">
@@ -83,9 +114,7 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Main content */}
       <div className="page-container">
-        {/* Quick actions */}
         <section className="mb-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link to="/pet-profiles" className="bg-white rounded-xl shadow-card p-4 text-center hover:shadow-hover transition-shadow">
@@ -115,7 +144,6 @@ export default function Index() {
           </div>
         </section>
 
-        {/* Pet profiles section */}
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="section-title">Your Pets</h2>
@@ -140,11 +168,15 @@ export default function Index() {
               pets.slice(0, 3).map((pet) => (
                 <PetProfileCard
                   key={pet.id}
+                  id={pet.id}
                   name={pet.name}
                   type={pet.type}
                   breed={pet.breed}
                   age={pet.age}
                   image={pet.image_url || "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"}
+                  showActions={true}
+                  onEdit={() => handleEditClick(pet)}
+                  onDelete={() => handleDeleteClick(pet)}
                 />
               ))
             ) : null}
@@ -165,7 +197,6 @@ export default function Index() {
           </div>
         </section>
 
-        {/* Upcoming appointments */}
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="section-title">Upcoming Appointments</h2>
@@ -188,7 +219,6 @@ export default function Index() {
           </div>
         </section>
 
-        {/* Resources */}
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="section-title">Resources For You</h2>
@@ -210,7 +240,6 @@ export default function Index() {
           </div>
         </section>
 
-        {/* Quick links */}
         <section className="mb-10">
           <div className="bg-petcare-blue/5 rounded-2xl p-6 md:p-8">
             <h2 className="section-title mb-6">Explore More</h2>
@@ -244,12 +273,29 @@ export default function Index() {
         </section>
       </div>
       
-      {/* Add Pet Modal */}
       <AddPetModal
         open={addPetModalOpen}
         onOpenChange={setAddPetModalOpen}
         onPetAdded={handleAddPet}
       />
+      
+      {selectedPet && (
+        <>
+          <EditPetModal
+            pet={selectedPet}
+            open={editPetModalOpen}
+            onOpenChange={setEditPetModalOpen}
+            onPetUpdated={handleUpdatePet}
+          />
+          
+          <DeletePetDialog
+            open={deletePetDialogOpen}
+            onOpenChange={setDeletePetDialogOpen}
+            onConfirm={handleDeletePet}
+            petName={selectedPet.name}
+          />
+        </>
+      )}
     </div>
   );
 }

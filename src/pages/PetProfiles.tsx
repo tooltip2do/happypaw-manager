@@ -5,12 +5,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PetProfileCard from "@/components/ui/PetProfileCard";
 import AddPetModal from "@/components/pets/AddPetModal";
-import { usePets, NewPet } from "@/hooks/usePets";
+import EditPetModal from "@/components/pets/EditPetModal";
+import DeletePetDialog from "@/components/pets/DeletePetDialog";
+import { usePets, NewPet, Pet } from "@/hooks/usePets";
 
 export default function PetProfiles() {
   const [searchQuery, setSearchQuery] = useState("");
   const [addPetModalOpen, setAddPetModalOpen] = useState(false);
-  const { pets, isLoading, addPet, isAdding } = usePets();
+  const [editPetModalOpen, setEditPetModalOpen] = useState(false);
+  const [deletePetDialogOpen, setDeletePetDialogOpen] = useState(false);
+  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  
+  const { 
+    pets, 
+    isLoading, 
+    addPet, 
+    isAdding,
+    updatePet,
+    isUpdating,
+    deletePet,
+    isDeleting
+  } = usePets();
 
   const filteredPets = pets.filter(pet => 
     pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -21,6 +36,28 @@ export default function PetProfiles() {
   const handleAddPet = async (petData: NewPet & { image?: File }) => {
     await addPet(petData);
     setAddPetModalOpen(false);
+  };
+
+  const handleEditClick = (pet: Pet) => {
+    setSelectedPet(pet);
+    setEditPetModalOpen(true);
+  };
+
+  const handleDeleteClick = (pet: Pet) => {
+    setSelectedPet(pet);
+    setDeletePetDialogOpen(true);
+  };
+
+  const handleUpdatePet = async (id: string, petData: NewPet & { image?: File }) => {
+    await updatePet({ id, pet: petData });
+    setEditPetModalOpen(false);
+  };
+
+  const handleDeletePet = async () => {
+    if (selectedPet) {
+      await deletePet(selectedPet.id);
+      setDeletePetDialogOpen(false);
+    }
   };
 
   return (
@@ -73,11 +110,15 @@ export default function PetProfiles() {
           filteredPets.map((pet) => (
             <PetProfileCard
               key={pet.id}
+              id={pet.id}
               name={pet.name}
               type={pet.type}
               breed={pet.breed}
               age={pet.age}
               image={pet.image_url || "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"}
+              showActions={true}
+              onEdit={() => handleEditClick(pet)}
+              onDelete={() => handleDeleteClick(pet)}
             />
           ))
         ) : (
@@ -118,12 +159,30 @@ export default function PetProfiles() {
         </div>
       </div>
 
-      {/* Add Pet Modal */}
+      {/* Modals */}
       <AddPetModal
         open={addPetModalOpen}
         onOpenChange={setAddPetModalOpen}
         onPetAdded={handleAddPet}
       />
+      
+      {selectedPet && (
+        <>
+          <EditPetModal
+            pet={selectedPet}
+            open={editPetModalOpen}
+            onOpenChange={setEditPetModalOpen}
+            onPetUpdated={handleUpdatePet}
+          />
+          
+          <DeletePetDialog
+            open={deletePetDialogOpen}
+            onOpenChange={setDeletePetDialogOpen}
+            onConfirm={handleDeletePet}
+            petName={selectedPet.name}
+          />
+        </>
+      )}
     </div>
   );
 }
