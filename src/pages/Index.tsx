@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Bell, Calendar, Heart, Activity, Users, BookOpen, ShoppingBag, MoreHorizontal, Plus } from "lucide-react";
@@ -10,6 +11,26 @@ import AddPetModal from "@/components/pets/AddPetModal";
 import EditPetModal from "@/components/pets/EditPetModal";
 import DeletePetDialog from "@/components/pets/DeletePetDialog";
 import AddAppointmentModal from "@/components/health/AddAppointmentModal";
+
+// Define resources data
+const resourcesData = [
+  {
+    id: 1,
+    title: "Essential Nutrition Tips for Dogs",
+    description: "Learn about the best diet practices to keep your dog healthy and active throughout their life.",
+    category: "Nutrition",
+    readTime: "5",
+    image: "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: 2,
+    title: "Basic Training for Your New Puppy",
+    description: "Start your puppy training journey with these fundamental commands and techniques.",
+    category: "Training",
+    readTime: "8",
+    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  }
+];
 
 export default function Index() {
   const [addPetModalOpen, setAddPetModalOpen] = useState(false);
@@ -211,7 +232,7 @@ export default function Index() {
             </Button>
           </div>
           <div className="staggered-fade-in grid grid-cols-1 md:grid-cols-2 gap-6">
-            {resources.map((resource) => (
+            {resourcesData.map((resource) => (
               <ResourceCard
                 key={resource.id}
                 title={resource.title}
