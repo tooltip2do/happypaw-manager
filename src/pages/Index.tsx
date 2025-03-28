@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Bell, Calendar, Heart, Activity, Users, BookOpen, ShoppingBag, MoreHorizontal } from "lucide-react";
+import { Bell, Calendar, Heart, Activity, Users, BookOpen, ShoppingBag, MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PetProfileCard from "@/components/ui/PetProfileCard";
 import AppointmentCard from "@/components/ui/AppointmentCard";
@@ -9,52 +9,15 @@ import { usePets, NewPet, Pet } from "@/hooks/usePets";
 import AddPetModal from "@/components/pets/AddPetModal";
 import EditPetModal from "@/components/pets/EditPetModal";
 import DeletePetDialog from "@/components/pets/DeletePetDialog";
-
-const appointments = [
-  {
-    id: 1,
-    title: "Veterinary Check-up",
-    date: "Tomorrow, June 15",
-    time: "10:00 AM",
-    provider: "Dr. Sarah Wilson",
-    address: "123 Pet Health Clinic, New York",
-    status: "upcoming" as const
-  },
-  {
-    id: 2,
-    title: "Grooming Session",
-    date: "Saturday, June 18",
-    time: "2:30 PM",
-    provider: "PetSmart Grooming",
-    address: "456 Mall Avenue, New York",
-    status: "upcoming" as const
-  }
-];
-
-const resources = [
-  {
-    id: 1,
-    title: "How to Introduce a New Pet to Your Home",
-    description: "Learn the best practices for bringing a new pet into your household and ensuring a smooth transition for everyone.",
-    category: "Tips & Advice",
-    readTime: "5",
-    image: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 2,
-    title: "Summer Pet Safety Guide",
-    description: "Protect your pets from heat, water dangers, and other summer hazards with these essential tips.",
-    category: "Health & Safety",
-    readTime: "7",
-    image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-  }
-];
+import AddAppointmentModal from "@/components/health/AddAppointmentModal";
 
 export default function Index() {
   const [addPetModalOpen, setAddPetModalOpen] = useState(false);
   const [editPetModalOpen, setEditPetModalOpen] = useState(false);
   const [deletePetDialogOpen, setDeletePetDialogOpen] = useState(false);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  const [addAppointmentModalOpen, setAddAppointmentModalOpen] = useState(false);
+  const [appointments, setAppointments] = useState<any[]>([]);
   
   const { 
     pets, 
@@ -89,6 +52,10 @@ export default function Index() {
       await deletePet(selectedPet.id);
       setDeletePetDialogOpen(false);
     }
+  };
+
+  const handleAddAppointment = (appointment: any) => {
+    setAppointments([...appointments, appointment]);
   };
 
   return (
@@ -205,17 +172,34 @@ export default function Index() {
             </Button>
           </div>
           <div className="staggered-fade-in grid grid-cols-1 md:grid-cols-2 gap-4">
-            {appointments.map((appointment) => (
-              <AppointmentCard
-                key={appointment.id}
-                title={appointment.title}
-                date={appointment.date}
-                time={appointment.time}
-                provider={appointment.provider}
-                address={appointment.address}
-                status={appointment.status}
-              />
-            ))}
+            {appointments.length > 0 ? (
+              appointments.map((appointment) => (
+                <AppointmentCard
+                  key={appointment.id}
+                  title={appointment.title}
+                  date={appointment.date}
+                  time={appointment.time}
+                  provider={appointment.provider}
+                  address={appointment.address}
+                  status={appointment.status}
+                />
+              ))
+            ) : (
+              <div 
+                className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-6 h-full card-hover min-h-[200px] cursor-pointer col-span-full"
+                onClick={() => setAddAppointmentModalOpen(true)}
+              >
+                <div className="text-center">
+                  <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-petcare-teal/10 mb-3">
+                    <Plus className="h-6 w-6 text-petcare-teal" />
+                  </div>
+                  <h3 className="font-medium text-sm mb-2">Schedule Your First Appointment</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Add an appointment for your pet's health care needs
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
@@ -296,6 +280,12 @@ export default function Index() {
           />
         </>
       )}
+      
+      <AddAppointmentModal
+        open={addAppointmentModalOpen}
+        onOpenChange={setAddAppointmentModalOpen}
+        onAppointmentAdded={handleAddAppointment}
+      />
     </div>
   );
 }
