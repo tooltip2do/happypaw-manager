@@ -16,22 +16,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // Function to remove branding elements
-        function removeBranding() {
-          const branding = document.querySelectorAll(".lovable-branding, footer, div[style*='lovable']");
-          branding.forEach(el => el.remove());
-        }
 
-        // Run once on page load
-        removeBranding();
-
-        // Monitor for dynamically added elements
-        const observer = new MutationObserver(() => removeBranding());
-        observer.observe(document.body, { childList: true, subtree: true });
-      });
-    </script>
   </head>
 
   <body>
@@ -39,5 +24,32 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    function removeLovableBadge() {
+      const badge = document.querySelector("a#lovable-badge");
+      if (badge) {
+        badge.remove();
+        console.log("Lovable badge removed!");
+      }
+    }
+
+    // Remove immediately if it's already present
+    removeLovableBadge();
+
+    // Monitor for dynamically injected elements
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.id === "lovable-badge" || node.nodeType === 1 && node.querySelector("#lovable-badge")) {
+            removeLovableBadge();
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+</script>
   </body>
 </html>
