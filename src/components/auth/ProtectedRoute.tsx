@@ -4,14 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { user, isLoading } = useAuth();
+  const { user, session, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    // Only redirect if we've finished loading and there's no user/session
+    if (!isLoading && !user && !session) {
+      console.log("No authenticated user, redirecting to auth page");
       navigate("/auth");
     }
-  }, [user, isLoading, navigate]);
+  }, [user, session, isLoading, navigate]);
 
   if (isLoading) {
     return (
@@ -21,5 +23,6 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     );
   }
 
-  return user ? <>{children}</> : null;
+  // Only render children if we have a user AND session
+  return (user && session) ? <>{children}</> : null;
 }
