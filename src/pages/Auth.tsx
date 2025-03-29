@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Auth() {
-  const { signIn, signUp, isLoading, user } = useAuth();
+  const { signIn, signUp, isLoading, user, session } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
   
@@ -22,10 +22,11 @@ export default function Auth() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [registerError, setRegisterError] = useState("");
 
-  if (user) {
-    navigate("/");
-    return null;
-  }
+  useEffect(() => {
+    if (user && session) {
+      navigate("/");
+    }
+  }, [user, session, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

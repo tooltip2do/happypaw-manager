@@ -1,0 +1,17 @@
+
+{
+  "name": "PetCare",
+  "short_name": "PetCare",
+  "description": "Manage your pet's health and wellbeing",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

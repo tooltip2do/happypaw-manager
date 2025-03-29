@@ -23,21 +23,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Create a flag to track if this component is still mounted
+    let isMounted = true;
+
     // Set up auth state listener FIRST to prevent missing auth events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         console.log("Auth state changed:", event);
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
+        
+        if (isMounted) {
+          setSession(currentSession);
+          setUser(currentSession?.user ?? null);
+        }
 
-        if (event === "SIGNED_IN") {
+        if (event === "SIGNED_IN" && isMounted) {
           setTimeout(() => {
             toast({
               title: "Signed in successfully",
               description: "Welcome back to PetCare!",
             });
           }, 0);
-        } else if (event === "SIGNED_OUT") {
+        } else if (event === "SIGNED_OUT" && isMounted) {
           setTimeout(() => {
             toast({
               title: "Signed out successfully",
@@ -49,14 +55,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      console.log("Initial session check:", currentSession ? "Found session" : "No session");
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      setIsLoading(false);
-    });
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        console.log("Initial session check:", currentSession ? "Found session" : "No session");
+        
+        if (isMounted) {
+          setSession(currentSession);
+          setUser(currentSession?.user ?? null);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Error getting session:", error);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
 
-    return () => subscription.unsubscribe();
+    initializeAuth();
+
+    // Clean up the subscription when the component unmounts
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string, name: string) => {
@@ -124,6 +147,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
+      // Force clear local state
+      setUser(null);
+      setSession(null);
+      
       navigate("/auth");
     } catch (error: any) {
       toast({
