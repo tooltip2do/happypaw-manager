@@ -1,4 +1,3 @@
-
 // Service Worker for PetCare App
 const CACHE_NAME = 'petcare-v1';
 
@@ -55,6 +54,29 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Special handling for assetlinks.json
+  if (event.request.url.includes('.well-known/assetlinks.json')) {
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => {
+          return response || fetch(event.request)
+            .then((fetchResponse) => {
+              // Store a copy of the response in cache
+              if (fetchResponse.status === 200) {
+                const responseToCache = fetchResponse.clone();
+                caches.open(CACHE_NAME)
+                  .then((cache) => {
+                    cache.put(event.request, responseToCache);
+                  });
+              }
+              return fetchResponse;
+            });
+        })
+    );
+    return;
+  }
+
+  // Regular handling for other requests
   event.respondWith(
     fetch(event.request)
       .then((response) => {

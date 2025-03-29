@@ -1,14 +1,20 @@
+
 User-agent: Googlebot
 Allow: /
+Allow: /.well-known/
 
 User-agent: Bingbot
 Allow: /
+Allow: /.well-known/
 
 User-agent: Twitterbot
 Allow: /
+Allow: /.well-known/
 
 User-agent: facebookexternalhit
 Allow: /
+Allow: /.well-known/
 
 User-agent: *
 Allow: /
+Allow: /.well-known/
