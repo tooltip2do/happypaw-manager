@@ -7,7 +7,7 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
+    --background: 210 50% 98%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -16,24 +16,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 209 100% 62%;
+    --primary: 250 95% 65%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96%;
+    --secondary: 250 40% 96%;
     --secondary-foreground: 222 47% 11%;
 
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 209 95% 90%;
+    --accent: 250 95% 90%;
     --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 350 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 222 84% 48%;
+    --ring: 250 84% 60%;
 
     --radius: 0.75rem;
 
@@ -66,7 +66,7 @@
 
 @layer components {
   .glass {
-    @apply bg-white/85 backdrop-blur-md border border-white/20 shadow-card;
+    @apply bg-white/80 backdrop-blur-md border border-white/30 shadow-card;
   }
   
   .card-hover {
@@ -74,19 +74,19 @@
   }
   
   .nav-link {
-    @apply px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-primary/5 transition-colors;
+    @apply px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary hover:bg-primary/10 transition-colors;
   }
   
   .nav-link-active {
-    @apply px-3 py-2 rounded-md text-sm font-medium text-primary bg-primary/10;
+    @apply px-3 py-2 rounded-md text-sm font-medium text-primary bg-primary/15;
   }
   
   .btn-icon {
-    @apply h-9 w-9 flex items-center justify-center rounded-full bg-white shadow-sm hover:shadow transition-shadow;
+    @apply h-9 w-9 flex items-center justify-center rounded-full bg-white/90 shadow-sm hover:shadow transition-shadow;
   }
   
   .section-title {
-    @apply text-xl font-semibold tracking-tight;
+    @apply text-xl font-semibold tracking-tight bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent;
   }
   
   .section-subtitle {
@@ -99,6 +99,15 @@
   
   .page-container {
     @apply max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8;
+  }
+  
+  /* Gradient card styles */
+  .gradient-card {
+    @apply bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm border border-white/30 shadow-lg;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent;
   }
 }
 
@@ -157,4 +166,17 @@
 .page-exit-active {
   opacity: 0;
   transition: opacity 300ms;
+}
+
+/* Glass morphism effects */
+.glass-morphism {
+  @apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-lg;
+}
+
+.glass-card {
+  @apply bg-white/70 backdrop-blur-md border border-white/30 rounded-xl shadow-lg;
+}
+
+.glass-button {
+  @apply bg-primary/90 backdrop-blur-sm hover:bg-primary/80 text-white shadow-md;
 }

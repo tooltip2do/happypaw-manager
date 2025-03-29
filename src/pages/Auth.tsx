@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -14,18 +13,15 @@ export default function Auth() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
   
-  // Login form state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   
-  // Registration form state
   const [name, setName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [registerError, setRegisterError] = useState("");
 
-  // If user is already logged in, redirect to home
   if (user) {
     navigate("/");
     return null;
@@ -54,13 +50,15 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-blue-50 px-4 py-12">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4 py-12">
+      <div className="glass-card max-w-md w-full space-y-8 p-1 rounded-2xl overflow-hidden">
+        <div className="text-center pt-6">
           <div className="flex justify-center">
-            <Heart className="h-12 w-12 text-petcare-coral" />
+            <div className="h-16 w-16 rounded-full flex items-center justify-center bg-gradient-to-br from-petcare-purple to-petcare-pink shadow-glow">
+              <Heart className="h-8 w-8 text-white" />
+            </div>
           </div>
-          <h1 className="mt-2 text-3xl font-bold bg-gradient-to-r from-petcare-coral to-petcare-blue bg-clip-text text-transparent">
+          <h1 className="mt-4 text-3xl font-bold gradient-text">
             PetCare
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -69,13 +67,13 @@ export default function Auth() {
         </div>
 
         <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 p-1 bg-secondary/50 backdrop-blur-sm">
+            <TabsTrigger value="login" className="rounded-xl">Login</TabsTrigger>
+            <TabsTrigger value="register" className="rounded-xl">Register</TabsTrigger>
           </TabsList>
           
           <TabsContent value="login">
-            <Card>
+            <Card className="border-0 shadow-none bg-transparent">
               <CardHeader>
                 <CardTitle>Login</CardTitle>
                 <CardDescription>
@@ -93,6 +91,7 @@ export default function Auth() {
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       required
+                      className="bg-white/70 backdrop-blur-sm"
                     />
                   </div>
                   <div className="space-y-2">
@@ -103,7 +102,6 @@ export default function Auth() {
                         className="text-xs text-primary hover:underline"
                         onClick={(e) => {
                           e.preventDefault();
-                          // Add forgot password functionality later
                           alert("Forgot password functionality coming soon!");
                         }}
                       >
@@ -116,11 +114,12 @@ export default function Auth() {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       required
+                      className="bg-white/70 backdrop-blur-sm"
                     />
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
+                  <Button type="submit" className="w-full glass-button" disabled={isLoading}>
                     {isLoading ? "Signing in..." : "Sign In"}
                   </Button>
                 </CardFooter>
@@ -129,7 +128,7 @@ export default function Auth() {
           </TabsContent>
           
           <TabsContent value="register">
-            <Card>
+            <Card className="border-0 shadow-none bg-transparent">
               <CardHeader>
                 <CardTitle>Create Account</CardTitle>
                 <CardDescription>
@@ -146,6 +145,7 @@ export default function Auth() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
+                      className="bg-white/70 backdrop-blur-sm"
                     />
                   </div>
                   <div className="space-y-2">
@@ -157,6 +157,7 @@ export default function Auth() {
                       value={registerEmail}
                       onChange={(e) => setRegisterEmail(e.target.value)}
                       required
+                      className="bg-white/70 backdrop-blur-sm"
                     />
                   </div>
                   <div className="space-y-2">
@@ -167,6 +168,7 @@ export default function Auth() {
                       value={registerPassword}
                       onChange={(e) => setRegisterPassword(e.target.value)}
                       required
+                      className="bg-white/70 backdrop-blur-sm"
                     />
                   </div>
                   <div className="space-y-2">
@@ -177,6 +179,7 @@ export default function Auth() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
+                      className="bg-white/70 backdrop-blur-sm"
                     />
                   </div>
                   {registerError && (
@@ -184,7 +187,7 @@ export default function Auth() {
                   )}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
+                  <Button type="submit" className="w-full glass-button" disabled={isLoading}>
                     {isLoading ? "Creating Account..." : "Create Account"}
                   </Button>
                 </CardFooter>
@@ -193,7 +196,7 @@ export default function Auth() {
           </TabsContent>
         </Tabs>
         
-        <div className="text-center text-sm text-muted-foreground mt-4">
+        <div className="text-center text-sm text-muted-foreground pb-6">
           <p>
             By signing up, you agree to our{" "}
             <a href="#" className="text-primary hover:underline">
